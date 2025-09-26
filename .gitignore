@@ -1,3 +1,6 @@
 *.vscode/
+*.cache/
 bin/
 build/
+doxygen_dir/
+cmake/
