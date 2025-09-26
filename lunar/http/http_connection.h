@@ -4,11 +4,14 @@
 #include "../socket_stream.h"
 #include "http.h"
 
-namespace lunar {
+namespace lunar
+{
 
-namespace http {
+namespace http
+{
 
-class HttpConnection : public SocketStream {
+class HttpConnection : public SocketStream
+{
 public:
     typedef std::shared_ptr<HttpConnection> ptr;
 
@@ -18,8 +21,8 @@ public:
     int sendRequest(HttpRequest::ptr req);
 };
 
-}
+} // namespace http
 
-}
+} // namespace lunar
 
 #endif

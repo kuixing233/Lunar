@@ -1,27 +1,31 @@
 #include "rpc_server.h"
 #include "../lunar.h"
 
-namespace lunar {
+namespace lunar
+{
 
-static lunar::Logger::ptr g_rpclogger = ALPHA_LOG_NAME("system");
+static lunar::Logger::ptr g_rpclogger = LUNAR_LOG_NAME("system");
 
-namespace rpc {
+namespace rpc
+{
 
-void RpcServer::handleClient(Socket::ptr client) {
+void RpcServer::handleClient(Socket::ptr client)
+{
 
-    ALPHA_LOG_INFO(g_rpclogger) << "RPC handleClient: " << *client;
+    LUNAR_LOG_INFO(g_rpclogger) << "RPC handleClient: " << *client;
 
     auto self = std::static_pointer_cast<RpcServer>(shared_from_this());
 
-    m_ioWorker->addEvent(client->getSocket(), IOManager::READ, [self, client]() {
-        self->getMessageCallback()(client);
-    });
+    m_ioWorker->addEvent(
+        client->getSocket(),
+        IOManager::READ,
+        [self, client]() { self->getMessageCallback()(client); });
 
     // m_ioWorker->addEvent(client->getSocket(), IOManager::WRITE, [&self, client]() {
     //     client->send("hello", 5);
     // });
 }
 
-}
+} // namespace rpc
 
-}
+} // namespace lunar

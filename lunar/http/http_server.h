@@ -5,28 +5,39 @@
 #include "http_session.h"
 #include "servlet.h"
 
-namespace lunar {
+namespace lunar
+{
 
-namespace http {
+namespace http
+{
 
-class HttpServer : public TcpServer {
+class HttpServer : public TcpServer
+{
 public:
     typedef std::shared_ptr<HttpServer> ptr;
-    HttpServer(bool keepalive = false
-                ,lunar::IOManager* worker = lunar::IOManager::GetThis()
-                ,lunar::IOManager* accept_worker = lunar::IOManager::GetThis());
+    HttpServer(bool keepalive = false,
+               lunar::IOManager *worker = lunar::IOManager::GetThis(),
+               lunar::IOManager *accept_worker = lunar::IOManager::GetThis());
 
-    ServletDispatch::ptr getServletDispatch() const { return m_dispatch;}
-    void setServletDispatch(ServletDispatch::ptr v) { m_dispatch = v;}
+    ServletDispatch::ptr getServletDispatch() const
+    {
+        return m_dispatch;
+    }
+    void setServletDispatch(ServletDispatch::ptr v)
+    {
+        m_dispatch = v;
+    }
+
 protected:
     void handleClient(Socket::ptr client) override;
+
 private:
     bool m_isKeepalive;
     ServletDispatch::ptr m_dispatch;
 };
 
-}
+} // namespace http
 
-}
+} // namespace lunar
 
 #endif

@@ -3,18 +3,18 @@
 
 /*
 
-#include <memory>
-#include <string>
-#include <vector>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/types.hpp>
+#include <memory>
 #include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
-#include <mongocxx/uri.hpp>
-#include <mongocxx/exception/exception.hpp>
 #include <mongocxx/collection.hpp>
-#include <mongocxx/transaction.hpp>
+#include <mongocxx/exception/exception.hpp>
+#include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
+#include <mongocxx/transaction.hpp>
+#include <mongocxx/uri.hpp>
+#include <string>
+#include <vector>
 
 class MongoData {
 public:

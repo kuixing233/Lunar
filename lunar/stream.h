@@ -1,21 +1,25 @@
 #ifndef __LUNAR_STREAM_H__
 #define __LUNAR_STREAM_H__
 
-#include <memory>
 #include "bytearray.h"
+#include <memory>
 
-namespace lunar {
+namespace lunar
+{
 
 /**
  * @brief 流结构
  */
-class Stream {
+class Stream
+{
 public:
     typedef std::shared_ptr<Stream> ptr;
     /**
      * @brief 析构函数
      */
-    virtual ~Stream() {}
+    virtual ~Stream()
+    {
+    }
 
     /**
      * @brief 读数据
@@ -26,7 +30,7 @@ public:
      *      @retval =0 被关闭
      *      @retval <0 出现流错误
      */
-    virtual int read(void* buffer, size_t length) = 0;
+    virtual int read(void *buffer, size_t length) = 0;
 
     /**
      * @brief 读数据
@@ -48,7 +52,7 @@ public:
      *      @retval =0 被关闭
      *      @retval <0 出现流错误
      */
-    virtual int readFixSize(void* buffer, size_t length);
+    virtual int readFixSize(void *buffer, size_t length);
 
     /**
      * @brief 读固定长度的数据
@@ -59,7 +63,7 @@ public:
      *      @retval =0 被关闭
      *      @retval <0 出现流错误
      */
-    virtual int readFixSize(ByteArray::ptr ba, size_t length); 
+    virtual int readFixSize(ByteArray::ptr ba, size_t length);
 
     /**
      * @brief 写数据
@@ -70,7 +74,7 @@ public:
      *      @retval =0 被关闭
      *      @retval <0 出现流错误
      */
-    virtual int write(const void* buffer, size_t length) = 0;
+    virtual int write(const void *buffer, size_t length) = 0;
 
     /**
      * @brief 写数据
@@ -92,7 +96,7 @@ public:
      *      @retval =0 被关闭
      *      @retval <0 出现流错误
      */
-    virtual int writeFixSize(const void* buffer, size_t length);
+    virtual int writeFixSize(const void *buffer, size_t length);
 
     /**
      * @brief 写固定长度的数据
@@ -111,6 +115,6 @@ public:
     virtual void close() = 0;
 };
 
-}
+} // namespace lunar
 
 #endif

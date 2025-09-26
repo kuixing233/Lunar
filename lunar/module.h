@@ -31,7 +31,7 @@
 
 //     virtual bool onConnect(lunar::Stream::ptr stream);
 //     virtual bool onDisconnect(lunar::Stream::ptr stream);
-    
+
 //     virtual bool onServerReady();
 //     virtual bool onServerUp();
 

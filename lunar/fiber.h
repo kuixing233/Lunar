@@ -1,24 +1,28 @@
 #ifndef __LUNAR_FIBER_H__
 #define __LUNAR_FIBER_H__
 
-#include <memory>
 #include <functional>
+#include <memory>
 #include <ucontext.h>
 
 #include "log.h"
 
-namespace lunar {
+namespace lunar
+{
 
 class Scheduler;
 
 // 协程类
-class Fiber : public std::enable_shared_from_this<Fiber> {
-friend class Scheduler;
+class Fiber : public std::enable_shared_from_this<Fiber>
+{
+    friend class Scheduler;
+
 public:
     typedef std::shared_ptr<Fiber> ptr;
 
     // 协程状态
-    enum State {
+    enum State
+    {
         /// 初始化状态
         INIT,
         /// 暂停状态
@@ -44,7 +48,9 @@ public:
      * @param[in] stacksize 协程栈大小
      * @param[in] use_caller 是否在MainFiber上调度
      */
-    Fiber(std::function<void()> cb, size_t stackSize = 0, bool use_caller = false);
+    Fiber(std::function<void()> cb,
+          size_t stackSize = 0,
+          bool use_caller = false);
 
     ~Fiber();
 
@@ -64,13 +70,19 @@ public:
     void back();
 
     // 返回协程 id
-    uint64_t getId() const { return m_id;}
+    uint64_t getId() const
+    {
+        return m_id;
+    }
 
     // 返回协程状态
-    State getState() const { return m_state;}
+    State getState() const
+    {
+        return m_state;
+    }
 
     // 设置当前线程的运行协程
-    static void SetThis(Fiber* f);
+    static void SetThis(Fiber *f);
 
     // 返回当前所在的协程
     static Fiber::ptr GetThis();
@@ -90,8 +102,9 @@ public:
     // 协程执行函数 执行完成返回到线程调度协程
     static void CallerMainFunc();
 
-    // 获取当前协程的 id 
+    // 获取当前协程的 id
     static uint64_t GetFiberId();
+
 private:
     /// 协程id
     uint64_t m_id = 0;
@@ -102,11 +115,11 @@ private:
     /// 协程上下文
     ucontext_t m_ctx;
     /// 协程运行栈指针
-    void* m_stack = nullptr;
+    void *m_stack = nullptr;
     /// 协程运行函数
     std::function<void()> m_cb;
 };
 
-}
+} // namespace lunar
 
 #endif

@@ -4,15 +4,18 @@
 #include <google/protobuf/service.h>
 #include <memory>
 
-namespace lunar {
+namespace lunar
+{
 
-namespace rpc {
+namespace rpc
+{
 
 /**
  * @brief RPC控制器
  * 
  */
-class RpcControllerImpl : public google::protobuf::RpcController {
+class RpcControllerImpl : public google::protobuf::RpcController
+{
 public:
     typedef std::shared_ptr<RpcControllerImpl> ptr;
 
@@ -43,7 +46,7 @@ public:
      * 
      * @param reason 
      */
-    void SetFailed(const std::string& reason) override;
+    void SetFailed(const std::string &reason) override;
 
     /**
      * @brief 取消RPC调用 
@@ -62,15 +65,15 @@ public:
      * 
      * @param callbak 
      */
-    void NotifyOnCancel(google::protobuf::Closure* callbak) override;
+    void NotifyOnCancel(google::protobuf::Closure *callbak) override;
 
 private:
-    bool        m_failed;  // RPC方法执行过程中的状态
+    bool m_failed;         // RPC方法执行过程中的状态
     std::string m_errText; // RPC方法执行过程中的错误信息
 };
 
-}
+} // namespace rpc
 
-}
+} // namespace lunar
 
 #endif

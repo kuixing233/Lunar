@@ -1,95 +1,117 @@
 #include "scheduler.h"
 #include "log.h"
 
-namespace lunar {
+namespace lunar
+{
 
-static lunar::Logger::ptr g_logger = ALPHA_LOG_NAME("system");
+static lunar::Logger::ptr g_logger = LUNAR_LOG_NAME("system");
 
-static thread_local Scheduler* t_scheduler = nullptr;
+/// 当前线程的调度器，同一个调度器下的所有线程指同同一个调度器实例
+static thread_local Scheduler *t_scheduler = nullptr;
 
-// 调度协程
-static thread_local Fiber* t_scheduler_fiber = nullptr;
+/// 当前线程的调度协程，每个线程都独有一份，包括caller线程
+static thread_local Fiber *t_scheduler_fiber = nullptr;
 
-Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
-    :m_name(name) {
-    
+Scheduler::Scheduler(size_t threads, bool use_caller, const std::string &name)
+    : m_name(name)
+{
+
     // 使用当前调用线程作为协程调度器的主线程
-    if(use_caller) {
+    if (use_caller)
+    {
         lunar::Fiber::GetThis();
         --threads;
 
         t_scheduler = this;
 
+        /**
+         * 在user_caller为true的情况下，初始化caller线程的调度协程
+         * caller线程的调度协程不会被调度器调度，而且，caller线程的调度协程停止时，应该返回caller线程的主协程
+         */
         m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
         lunar::Thread::SetName(m_name);
 
         t_scheduler_fiber = m_rootFiber.get();
         m_threadIds.push_back(m_rootThread);
-    } else {
+    }
+    else
+    {
         m_rootThread = -1;
     }
     m_threadCount = threads;
 }
 
-Scheduler::~Scheduler() {
+Scheduler::~Scheduler()
+{
 
-    if(GetThis() == this) {
+    if (GetThis() == this)
+    {
         t_scheduler = nullptr;
     }
 }
 
-Scheduler* Scheduler::GetThis() {
+Scheduler *Scheduler::GetThis()
+{
     return t_scheduler;
 }
 
-Fiber* Scheduler::GetMainFiber() {
+Fiber *Scheduler::GetMainFiber()
+{
     return t_scheduler_fiber;
 }
 
-void Scheduler::start() {
+void Scheduler::start()
+{
     MutexType::Lock lock(m_mutex);
 
-    if(!m_stopping) {
+    if (!m_stopping)
+    {
         return;
     }
     m_stopping = false;
 
     m_threads.resize(m_threadCount);
-    for(size_t i = 0; i < m_threadCount; ++i) {
-        m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this)
-                            , m_name + "_" + std::to_string(i)));
+    for (size_t i = 0; i < m_threadCount; ++i)
+    {
+        m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this),
+                                      m_name + "_" + std::to_string(i)));
         m_threadIds.push_back(m_threads[i]->getId());
     }
     lock.unlock();
 }
 
-void Scheduler::stop() {
+void Scheduler::stop()
+{
     m_autoStop = true;
-    if(m_rootFiber
-            && m_threadCount == 0
-            && (m_rootFiber->getState() == Fiber::TERM
-                || m_rootFiber->getState() == Fiber::INIT)) {
-        ALPHA_LOG_INFO(g_logger) << this << " stopped";
+    if (m_rootFiber && m_threadCount == 0 &&
+        (m_rootFiber->getState() == Fiber::TERM ||
+         m_rootFiber->getState() == Fiber::INIT))
+    {
+        LUNAR_LOG_INFO(g_logger) << this << " stopped";
         m_stopping = true;
 
-        if(stopping()) {
+        if (stopping())
+        {
             return;
         }
     }
 
 
-
     m_stopping = true;
-    for(size_t i = 0; i < m_threadCount; ++i) {
+    for (size_t i = 0; i < m_threadCount; ++i)
+    {
         tickle();
     }
 
-    if(m_rootFiber) {
+    if (m_rootFiber)
+    {
         tickle();
     }
 
-    if(m_rootFiber) {
-        if(!stopping()) {
+    if (m_rootFiber)
+    {
+        if (!stopping())
+        {
             m_rootFiber->call();
         }
     }
@@ -100,20 +122,24 @@ void Scheduler::stop() {
         thrs.swap(m_threads);
     }
 
-    for(auto& i : thrs) {
+    for (auto &i : thrs)
+    {
         i->join();
     }
 }
 
-void Scheduler::setThis() {
+void Scheduler::setThis()
+{
     t_scheduler = this;
 }
 
-void Scheduler::run() {
-    ALPHA_LOG_DEBUG(g_logger) << m_name << " run";
-    
+void Scheduler::run()
+{
+    LUNAR_LOG_DEBUG(g_logger) << m_name << " run";
+
     setThis();
-    if(lunar::GetThreadId() != m_rootThread) {
+    if (lunar::GetThreadId() != m_rootThread)
+    {
         t_scheduler_fiber = Fiber::GetThis().get();
     }
 
@@ -121,21 +147,25 @@ void Scheduler::run() {
     Fiber::ptr cb_fiber;
 
     FiberAndThread ft;
-    while(true) {
+    while (true)
+    {
         ft.reset();
         bool tickle_me = false;
         bool is_active = false;
         {
             MutexType::Lock lock(m_mutex);
             auto it = m_fibers.begin();
-            while(it != m_fibers.end()) {
-                if(it->thread != -1 && it->thread != lunar::GetThreadId()) {
+            while (it != m_fibers.end())
+            {
+                if (it->thread != -1 && it->thread != lunar::GetThreadId())
+                {
                     ++it;
                     tickle_me = true;
                     continue;
                 }
 
-                if(it->fiber && it->fiber->getState() == Fiber::EXEC) {
+                if (it->fiber && it->fiber->getState() == Fiber::EXEC)
+                {
                     ++it;
                     continue;
                 }
@@ -149,83 +179,110 @@ void Scheduler::run() {
             tickle_me |= it != m_fibers.end();
         }
 
-        if(tickle_me) {
+        if (tickle_me)
+        {
             tickle();
         }
 
-        if(ft.fiber && (ft.fiber->getState() != Fiber::TERM
-                        && ft.fiber->getState() != Fiber::EXCEPT)) {
+        if (ft.fiber && (ft.fiber->getState() != Fiber::TERM &&
+                         ft.fiber->getState() != Fiber::EXCEPT))
+        {
             ft.fiber->swapIn();
             --m_activeThreadCount;
 
-            if(ft.fiber->getState() == Fiber::READY) {
+            if (ft.fiber->getState() == Fiber::READY)
+            {
                 schedule(ft.fiber);
-            } else if(ft.fiber->getState() != Fiber::TERM
-                    && ft.fiber->getState() != Fiber::EXCEPT) {
+            }
+            else if (ft.fiber->getState() != Fiber::TERM &&
+                     ft.fiber->getState() != Fiber::EXCEPT)
+            {
                 ft.fiber->m_state = Fiber::HOLD;
             }
             ft.reset();
-        } else if(ft.cb) {
-            if(cb_fiber) {
+        }
+        else if (ft.cb)
+        {
+            if (cb_fiber)
+            {
                 cb_fiber->reset(ft.cb);
-            } else {
+            }
+            else
+            {
                 cb_fiber.reset(new Fiber(ft.cb));
-            } 
+            }
             ft.reset();
             cb_fiber->swapIn();
             --m_activeThreadCount;
-            if(cb_fiber->getState() == Fiber::READY) {
+            if (cb_fiber->getState() == Fiber::READY)
+            {
                 schedule(cb_fiber);
                 cb_fiber.reset();
-            } else if(cb_fiber->getState() == Fiber::EXCEPT
-                    || cb_fiber->getState() == Fiber::TERM) {
+            }
+            else if (cb_fiber->getState() == Fiber::EXCEPT ||
+                     cb_fiber->getState() == Fiber::TERM)
+            {
                 cb_fiber->reset(nullptr);
-            } else {
+            }
+            else
+            {
                 cb_fiber->m_state = Fiber::HOLD;
                 cb_fiber.reset();
             }
-        } else {
-            if(is_active) {
+        }
+        else
+        {
+            if (is_active)
+            {
                 --m_activeThreadCount;
                 continue;
             }
-            if(idle_fiber->getState() == Fiber::TERM) {
-                ALPHA_LOG_INFO(g_logger) << "idle fiber term";
+            if (idle_fiber->getState() == Fiber::TERM)
+            {
+                LUNAR_LOG_INFO(g_logger) << "idle fiber term";
                 break;
             }
 
             ++m_idleThreadCount;
             idle_fiber->swapIn();
             --m_idleThreadCount;
-            if(idle_fiber->getState() != Fiber::TERM
-                    && idle_fiber->getState() != Fiber::EXCEPT) {
+            if (idle_fiber->getState() != Fiber::TERM &&
+                idle_fiber->getState() != Fiber::EXCEPT)
+            {
                 idle_fiber->m_state = Fiber::HOLD;
             }
         }
     }
 }
 
-void Scheduler::tickle() {
-    ALPHA_LOG_INFO(g_logger) << "tickle";
+void Scheduler::tickle()
+{
+    LUNAR_LOG_INFO(g_logger) << "tickle";
 }
 
-bool Scheduler::stopping() {
+bool Scheduler::stopping()
+{
     MutexType::Lock lock(m_mutex);
-    return m_autoStop && m_stopping
-        && m_fibers.empty() && m_activeThreadCount == 0;
+    return m_autoStop && m_stopping && m_fibers.empty() &&
+           m_activeThreadCount == 0;
 }
 
-void Scheduler::idle() {
-    ALPHA_LOG_INFO(g_logger) << "idle";
-    while(!stopping()) {
+void Scheduler::idle()
+{
+    LUNAR_LOG_INFO(g_logger) << "idle";
+    while (!stopping())
+    {
         lunar::Fiber::YieldToHold();
     }
 }
 
-void Scheduler::switchTo(int thread) {
+void Scheduler::switchTo(int thread)
+{
 
-    if(Scheduler::GetThis() == this) {
-        if(thread == -1 || thread == lunar::GetThreadId()) {
+    if (Scheduler::GetThis() == this)
+    {
+        if (thread == -1 || thread == lunar::GetThreadId())
+        {
             return;
         }
     }
@@ -233,15 +290,17 @@ void Scheduler::switchTo(int thread) {
     Fiber::YieldToHold();
 }
 
-std::ostream& Scheduler::dump(std::ostream& os) {
-    os << "[Scheduler name = " << m_name
-        << " size = " << m_threadCount
-        << " active_count = " << m_activeThreadCount
-        << " idle_count = " << m_idleThreadCount
-        << " stopping = " << m_stopping
-        << " ]" << std::endl << "   ";
-    for(size_t i = 0; i < m_threadIds.size(); ++i) {
-        if(i) {
+std::ostream &Scheduler::dump(std::ostream &os)
+{
+    os << "[Scheduler name = " << m_name << " size = " << m_threadCount
+       << " active_count = " << m_activeThreadCount
+       << " idle_count = " << m_idleThreadCount << " stopping = " << m_stopping
+       << " ]" << std::endl
+       << "   ";
+    for (size_t i = 0; i < m_threadIds.size(); ++i)
+    {
+        if (i)
+        {
             os << ", ";
         }
         os << m_threadIds[i];
@@ -249,4 +308,4 @@ std::ostream& Scheduler::dump(std::ostream& os) {
     return os;
 }
 
-}
+} // namespace lunar

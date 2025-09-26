@@ -1,12 +1,14 @@
 #ifndef __LUNAR_NONCOPY_H__
 #define __LUNAR_NONCOPY_H__
 
-namespace lunar {
+namespace lunar
+{
 
 /**
  * @brief 对象无法拷贝,赋值
  */
-class Noncopyable {
+class Noncopyable
+{
 public:
     /**
      * @brief 默认构造函数
@@ -21,13 +23,13 @@ public:
     /**
      * @brief 拷贝构造函数(禁用)
      */
-    Noncopyable(const Noncopyable&) = delete;
+    Noncopyable(const Noncopyable &) = delete;
 
     /**
      * @brief 赋值函数(禁用)
      */
-    Noncopyable& operator=(const Noncopyable&) = delete;
+    Noncopyable &operator=(const Noncopyable &) = delete;
 };
-}
+} // namespace lunar
 
 #endif

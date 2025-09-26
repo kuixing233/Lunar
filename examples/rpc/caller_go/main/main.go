@@ -15,7 +15,7 @@ func main() {
 	// ...
 	client := __.NewUserServiceRpcClient(conn)
 	resp, _ := client.Login(context.Background(), &__.LoginRequest{
-		Name: []byte("alpha_go"),
+		Name: []byte("lunar_go"),
 		Pwd:  []byte("883721"),
 	})
 

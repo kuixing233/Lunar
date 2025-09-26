@@ -131,7 +131,7 @@
                   | "+" | "," | ";" | "=" | more_delims ) ;
   gen_delims    = ( ":" | "/" | "?" | "#" | "[" | "]" | "@" ) ;
   reserved      = ( gen_delims | sub_delims ) ;
-  unreserved    = ( alpha | digit | "-" | "." | "_" | "~" ) ;
+  unreserved    = ( lunar | digit | "-" | "." | "_" | "~" ) ;
 
   pct_encoded   = ( "%" xdigit xdigit ) ;
 
@@ -194,7 +194,7 @@
   userinfo      = ( ( unreserved | pct_encoded | sub_delims | ":" )* ) ;
   authority     = ( ( userinfo "@" )? host ( ":" port )? ) ;
 
-  scheme        = ( alpha ( alpha | digit | "+" | "-" | "." )* ) ;
+  scheme        = ( lunar ( lunar | digit | "+" | "-" | "." )* ) ;
 
   relative_part = ( "//" authority path_abempty
                   | path_absolute

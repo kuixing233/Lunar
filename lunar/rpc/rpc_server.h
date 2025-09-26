@@ -3,26 +3,45 @@
 
 #include "../tcp_server.h"
 
-namespace lunar {
+namespace lunar
+{
 
-namespace rpc {
+namespace rpc
+{
 
-class RpcServer : public TcpServer {
+class RpcServer : public TcpServer
+{
 public:
     typedef std::shared_ptr<RpcServer> ptr;
 
-    RpcServer()
-        :TcpServer() {}
+    RpcServer() : TcpServer()
+    {
+    }
 
-    ~RpcServer() {}
+    ~RpcServer()
+    {
+    }
 
-    void setConnectionCallback(const std::function<void(const Socket::ptr&)>& cb) { m_connectionCallback = cb;}
+    void setConnectionCallback(
+        const std::function<void(const Socket::ptr &)> &cb)
+    {
+        m_connectionCallback = cb;
+    }
 
-    void setMessageCallback(const std::function<void(const Socket::ptr&)>& cb) { m_messageCallback = cb;}
+    void setMessageCallback(const std::function<void(const Socket::ptr &)> &cb)
+    {
+        m_messageCallback = cb;
+    }
 
-    std::function<void(const Socket::ptr&)>& getConnectionCallback() { return m_connectionCallback;}
+    std::function<void(const Socket::ptr &)> &getConnectionCallback()
+    {
+        return m_connectionCallback;
+    }
 
-    std::function<void(const Socket::ptr&)>& getMessageCallback() { return m_messageCallback;}
+    std::function<void(const Socket::ptr &)> &getMessageCallback()
+    {
+        return m_messageCallback;
+    }
 
 protected:
     /**
@@ -31,12 +50,12 @@ protected:
     virtual void handleClient(Socket::ptr client);
 
 private:
-    std::function<void(const Socket::ptr&)> m_connectionCallback;
-    std::function<void(const Socket::ptr&)> m_messageCallback;
+    std::function<void(const Socket::ptr &)> m_connectionCallback;
+    std::function<void(const Socket::ptr &)> m_messageCallback;
 };
 
-}
+} // namespace rpc
 
-}
+} // namespace lunar
 
 #endif

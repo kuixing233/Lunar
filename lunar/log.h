@@ -1,64 +1,72 @@
 #ifndef __LUNAR_LOG_H__
 #define __LUNAR_LOG_H__
 
-#include <string>
-#include <stdint.h>
-#include <iostream>
-#include <memory>
-#include <list>
-#include <sstream>
-#include <fstream>
-#include <vector>
-#include <stdarg.h>
-#include <map>
-#include "thread.h"
 #include "singleton.h"
+#include "thread.h"
 #include "util.h"
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <stdarg.h>
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 /**
  * @brief 使用流式方式将日志级别level的日志写入到logger
  */
-// #define ALPHA_LOG_LEVEL(logger, level) \
+// #define LUNAR_LOG_LEVEL(logger, level) \
 //     if(logger->getLevel() <= level) \
 //         lunar::LogEventWrap(lunar::LogEvent::ptr(new lunar::LogEvent(logger, level, \
 //                         __FILE__, __LINE__, 0, lunar::GetThreadId(),\
 //                 lunar::GetFiberId(), time(0), lunar::Thread::GetName()))).getSS()
 
-#define ALPHA_LOG_LEVEL(logger, level) \
-    if(logger->getLevel() <= level)  \
-        lunar::LogEventWrap(lunar::LogEvent::ptr(new lunar::LogEvent(logger, level, \
-                        __FILE__, __LINE__, 0, lunar::GetThreadId(),\
-                lunar::GetFiberId(), time(0), lunar::Thread::GetName()))).getSS() 
+#define LUNAR_LOG_LEVEL(logger, level)                                         \
+    if (logger->getLevel() <= level)                                           \
+    lunar::LogEventWrap(                                                       \
+        lunar::LogEvent::ptr(new lunar::LogEvent(logger,                       \
+                                                 level,                        \
+                                                 __FILE__,                     \
+                                                 __LINE__,                     \
+                                                 0,                            \
+                                                 lunar::GetThreadId(),         \
+                                                 lunar::GetFiberId(),          \
+                                                 time(0),                      \
+                                                 lunar::Thread::GetName())))   \
+        .getSS()
 
 /**
  * @brief 使用流式方式将日志级别debug的日志写入到logger
  */
-#define ALPHA_LOG_DEBUG(logger) ALPHA_LOG_LEVEL(logger, lunar::LogLevel::DEBUG)
+#define LUNAR_LOG_DEBUG(logger) LUNAR_LOG_LEVEL(logger, lunar::LogLevel::DEBUG)
 
 /**
  * @brief 使用流式方式将日志级别info的日志写入到logger
  */
-#define ALPHA_LOG_INFO(logger) ALPHA_LOG_LEVEL(logger, lunar::LogLevel::INFO)
+#define LUNAR_LOG_INFO(logger) LUNAR_LOG_LEVEL(logger, lunar::LogLevel::INFO)
 
 /**
  * @brief 使用流式方式将日志级别warn的日志写入到logger
  */
-#define ALPHA_LOG_WARN(logger) ALPHA_LOG_LEVEL(logger, lunar::LogLevel::WARN)
+#define LUNAR_LOG_WARN(logger) LUNAR_LOG_LEVEL(logger, lunar::LogLevel::WARN)
 
 /**
  * @brief 使用流式方式将日志级别error的日志写入到logger
  */
-#define ALPHA_LOG_ERROR(logger) ALPHA_LOG_LEVEL(logger, lunar::LogLevel::ERROR)
+#define LUNAR_LOG_ERROR(logger) LUNAR_LOG_LEVEL(logger, lunar::LogLevel::ERROR)
 
 /**
  * @brief 使用流式方式将日志级别fatal的日志写入到logger
  */
-#define ALPHA_LOG_FATAL(logger) ALPHA_LOG_LEVEL(logger, lunar::LogLevel::FATAL)
+#define LUNAR_LOG_FATAL(logger) LUNAR_LOG_LEVEL(logger, lunar::LogLevel::FATAL)
 
 /**
  * @brief 使用格式化方式将日志级别level的日志写入到logger
  */
-// #define ALPHA_LOG_FMT_LEVEL(logger, level, fmt, ...) \
+// #define LUNAR_LOG_FMT_LEVEL(logger, level, fmt, ...) \
 //     if(logger->getLevel() <= level) \
 //         lunar::LogEventWrap(lunar::LogEvent::ptr(new lunar::LogEvent(logger, level, \
 //                         __FILE__, __LINE__, 0, lunar::GetThreadId(),\
@@ -67,47 +75,55 @@
 /**
  * @brief 使用格式化方式将日志级别debug的日志写入到logger
  */
-#define ALPHA_LOG_FMT_DEBUG(logger, fmt, ...) ALPHA_LOG_FMT_LEVEL(logger, lunar::LogLevel::DEBUG, fmt, __VA_ARGS__)
+#define LUNAR_LOG_FMT_DEBUG(logger, fmt, ...)                                  \
+    LUNAR_LOG_FMT_LEVEL(logger, lunar::LogLevel::DEBUG, fmt, __VA_ARGS__)
 
 /**
  * @brief 使用格式化方式将日志级别info的日志写入到logger
  */
-#define ALPHA_LOG_FMT_INFO(logger, fmt, ...)  ALPHA_LOG_FMT_LEVEL(logger, lunar::LogLevel::INFO, fmt, __VA_ARGS__)
+#define LUNAR_LOG_FMT_INFO(logger, fmt, ...)                                   \
+    LUNAR_LOG_FMT_LEVEL(logger, lunar::LogLevel::INFO, fmt, __VA_ARGS__)
 
 /**
  * @brief 使用格式化方式将日志级别warn的日志写入到logger
  */
-#define ALPHA_LOG_FMT_WARN(logger, fmt, ...)  ALPHA_LOG_FMT_LEVEL(logger, lunar::LogLevel::WARN, fmt, __VA_ARGS__)
+#define LUNAR_LOG_FMT_WARN(logger, fmt, ...)                                   \
+    LUNAR_LOG_FMT_LEVEL(logger, lunar::LogLevel::WARN, fmt, __VA_ARGS__)
 
 /**
  * @brief 使用格式化方式将日志级别error的日志写入到logger
  */
-#define ALPHA_LOG_FMT_ERROR(logger, fmt, ...) ALPHA_LOG_FMT_LEVEL(logger, lunar::LogLevel::ERROR, fmt, __VA_ARGS__)
+#define LUNAR_LOG_FMT_ERROR(logger, fmt, ...)                                  \
+    LUNAR_LOG_FMT_LEVEL(logger, lunar::LogLevel::ERROR, fmt, __VA_ARGS__)
 
 /**
  * @brief 使用格式化方式将日志级别fatal的日志写入到logger
  */
-#define ALPHA_LOG_FMT_FATAL(logger, fmt, ...) ALPHA_LOG_FMT_LEVEL(logger, lunar::LogLevel::FATAL, fmt, __VA_ARGS__)
+#define LUNAR_LOG_FMT_FATAL(logger, fmt, ...)                                  \
+    LUNAR_LOG_FMT_LEVEL(logger, lunar::LogLevel::FATAL, fmt, __VA_ARGS__)
 
 /**
  * @brief 获取主日志器
  */
-#define ALPHA_LOG_ROOT() lunar::LoggerMgr::GetInstance()->getRoot()
+#define LUNAR_LOG_ROOT() lunar::LoggerMgr::GetInstance()->getRoot()
 
 /**
  * @brief 获取name的日志器
  */
-#define ALPHA_LOG_NAME(name) lunar::LoggerMgr::GetInstance()->getLogger(name)
+#define LUNAR_LOG_NAME(name) lunar::LoggerMgr::GetInstance()->getLogger(name)
 
-namespace lunar {
+namespace lunar
+{
 
 class Logger;
 class LoggerManager;
 
 // 日志级别
-class LogLevel {
+class LogLevel
+{
 public:
-    enum Level {
+    enum Level
+    {
         UNKNOW = 0,
         DEBUG = 1,
         INFO = 2,
@@ -117,53 +133,92 @@ public:
     };
 
     // 将日志级别转换成文本输出
-    static const char* ToString(LogLevel::Level level);
+    static const char *ToString(LogLevel::Level level);
 
     // 将文本装换成日志级别
-    static LogLevel::Level FromString(const std::string& str);
+    static LogLevel::Level FromString(const std::string &str);
 };
 
 // 日志事件
-class LogEvent {
+class LogEvent
+{
 public:
     typedef std::shared_ptr<LogEvent> ptr;
 
-    LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level
-            ,const char* file, int32_t line, uint32_t elapse
-            ,uint32_t thread_id, uint32_t fiber_id, uint64_t time
-            ,const std::string& thread_name);
+    LogEvent(std::shared_ptr<Logger> logger,
+             LogLevel::Level level,
+             const char *file,
+             int32_t line,
+             uint32_t elapse,
+             uint32_t thread_id,
+             uint32_t fiber_id,
+             uint64_t time,
+             const std::string &thread_name);
 
     // 返回文件名
-    const char* getFile() const { return m_file;}
+    const char *getFile() const
+    {
+        return m_file;
+    }
 
-    int32_t getLine() const { return m_line;} 
+    int32_t getLine() const
+    {
+        return m_line;
+    }
 
-    uint32_t getElapse() const { return m_elapse;}
+    uint32_t getElapse() const
+    {
+        return m_elapse;
+    }
 
-    uint32_t getThreadId() const { return m_threadId;}
+    uint32_t getThreadId() const
+    {
+        return m_threadId;
+    }
 
-    uint32_t getFiberId() const { return m_fiberId;}
+    uint32_t getFiberId() const
+    {
+        return m_fiberId;
+    }
 
-    uint64_t getTime() const { return m_time;}
+    uint64_t getTime() const
+    {
+        return m_time;
+    }
 
-    const std::string& getThreadName() const { return m_threadName;}
+    const std::string &getThreadName() const
+    {
+        return m_threadName;
+    }
 
-    std::string getContent() const { return m_ss.str();}
+    std::string getContent() const
+    {
+        return m_ss.str();
+    }
 
-    std::shared_ptr<Logger> getLogger() const { return m_logger;}
+    std::shared_ptr<Logger> getLogger() const
+    {
+        return m_logger;
+    }
 
-    LogLevel::Level getLevel() const { return m_level;}
+    LogLevel::Level getLevel() const
+    {
+        return m_level;
+    }
 
-    std::stringstream& getSS() { return m_ss;}
+    std::stringstream &getSS()
+    {
+        return m_ss;
+    }
 
     // 格式化写入日志内容
-    void format(const char* fmt, ...);
+    void format(const char *fmt, ...);
 
-    void format(const char* fmt, va_list al);
+    void format(const char *fmt, va_list al);
 
 private:
     // 文件名
-    const char* m_file = nullptr;
+    const char *m_file = nullptr;
     // 行号
     int32_t m_line = 0;
     // 程序启动开始到现在的毫秒数
@@ -185,51 +240,75 @@ private:
 };
 
 // 日志包装器
-class LogEventWrap {
+class LogEventWrap
+{
 public:
     LogEventWrap(LogEvent::ptr e);
     ~LogEventWrap();
 
     // 获取日志事件
-    LogEvent::ptr getEvent() const { return m_event;}
+    LogEvent::ptr getEvent() const
+    {
+        return m_event;
+    }
 
     // 获取日志内容流
-    std::stringstream& getSS();
+    std::stringstream &getSS();
+
 private:
     // 日志事件
     LogEvent::ptr m_event;
 };
 
 // 日志格式化
-class LogFormatter {
+class LogFormatter
+{
 public:
     typedef std::shared_ptr<LogFormatter> ptr;
 
-    LogFormatter(const std::string& pattern); 
+    LogFormatter(const std::string &pattern);
 
     // 返回格式化日志文本
-    std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
-    std::ostream& format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event);
+    std::string format(std::shared_ptr<Logger> logger,
+                       LogLevel::Level level,
+                       LogEvent::ptr event);
+    std::ostream &format(std::ostream &ofs,
+                         std::shared_ptr<Logger> logger,
+                         LogLevel::Level level,
+                         LogEvent::ptr event);
 
 public:
     // 日志内容格式化
-    class FormatItem {
+    class FormatItem
+    {
     public:
         typedef std::shared_ptr<FormatItem> ptr;
 
-        virtual ~FormatItem() {}
+        virtual ~FormatItem()
+        {
+        }
 
         // 格式化日志到流
-        virtual void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
+        virtual void format(std::ostream &os,
+                            std::shared_ptr<Logger> logger,
+                            LogLevel::Level level,
+                            LogEvent::ptr event) = 0;
     };
 
     // 初始化 解析日志模板
     void init();
 
-    bool isError() const { return m_error;}
+    bool isError() const
+    {
+        return m_error;
+    }
 
     // 返回日志模板
-    const std::string getPattern() const { return m_pattern;}
+    const std::string getPattern() const
+    {
+        return m_pattern;
+    }
+
 private:
     // 日志格式模板
     std::string m_pattern;
@@ -240,15 +319,21 @@ private:
 };
 
 // 日志输出目标
-class LogAppender {
-friend class Logger;
+class LogAppender
+{
+    friend class Logger;
+
 public:
     typedef std::shared_ptr<LogAppender> ptr;
     typedef Spinlock MutexType;
 
-    ~LogAppender() {}
+    ~LogAppender()
+    {
+    }
 
-    virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) = 0;
+    virtual void log(std::shared_ptr<Logger> logger,
+                     LogLevel::Level level,
+                     LogEvent::ptr event) = 0;
 
     // 将日志输出目标的配置转换成 YAML String
     // virtual std::string toYamlString() = 0;
@@ -260,10 +345,17 @@ public:
     LogFormatter::ptr getFormatter();
 
     // 获取日志级别
-    LogLevel::Level getLevel() const { return m_level;}
+    LogLevel::Level getLevel() const
+    {
+        return m_level;
+    }
 
     // 设置日志级别
-    void setLevel(LogLevel::Level val) { m_level = val;}
+    void setLevel(LogLevel::Level val)
+    {
+        m_level = val;
+    }
+
 protected:
     // 日志级别
     LogLevel::Level m_level = LogLevel::DEBUG;
@@ -276,13 +368,15 @@ protected:
 };
 
 // 日志器
-class Logger : public std::enable_shared_from_this<Logger> {
-friend class LoggerManager;
+class Logger : public std::enable_shared_from_this<Logger>
+{
+    friend class LoggerManager;
+
 public:
     typedef std::shared_ptr<Logger> ptr;
     typedef Spinlock MutexType;
 
-    Logger(const std::string& name = "root");
+    Logger(const std::string &name = "root");
 
     // 写日志
     void log(LogLevel::Level level, LogEvent::ptr event);
@@ -298,11 +392,11 @@ public:
 
     // 写error日志
     void error(LogEvent::ptr event);
-    
+
     // 写fatal日志
     void fatal(LogEvent::ptr event);
-    
-    // 添加日志目标 
+
+    // 添加日志目标
     void addAppender(LogAppender::ptr appender);
 
     // 删除日志目标
@@ -312,25 +406,35 @@ public:
     void clearAppenders();
 
     // 返回日志级别
-    LogLevel::Level getLevel() const { return m_level;}
+    LogLevel::Level getLevel() const
+    {
+        return m_level;
+    }
 
     // 设置日志级别
-    void setLevel(LogLevel::Level val) { m_level = val;}
+    void setLevel(LogLevel::Level val)
+    {
+        m_level = val;
+    }
 
     // 返回日志名称
-    const std::string& getName() const { return m_name;}
+    const std::string &getName() const
+    {
+        return m_name;
+    }
 
     // 设置日志格式器
     void setFormatter(LogFormatter::ptr val);
 
     // 设置日志格式模板
-    void setFormatter(const std::string& val);
+    void setFormatter(const std::string &val);
 
     // 获取日志格式器
     LogFormatter::ptr getFormatter();
 
     // 将日志器的配置转成YAML String
     std::string toYamlString();
+
 private:
     // 日志名称
     std::string m_name;
@@ -347,23 +451,30 @@ private:
 };
 
 // 输出到控制台的Appender
-class StdoutLogAppender : public LogAppender {
+class StdoutLogAppender : public LogAppender
+{
 public:
     typedef std::shared_ptr<StdoutLogAppender> ptr;
-    void log(Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override;
+    void log(Logger::ptr logger,
+             LogLevel::Level level,
+             LogEvent::ptr event) override;
     // std::string toYamlString() override;
 };
 
 // 输出到文件的Appender
-class FileLogAppender : public LogAppender {
+class FileLogAppender : public LogAppender
+{
 public:
     typedef std::shared_ptr<FileLogAppender> ptr;
-    FileLogAppender(const std::string& filename);
-    void log(Logger::ptr logger, LogLevel::Level level, LogEvent::ptr event) override;
+    FileLogAppender(const std::string &filename);
+    void log(Logger::ptr logger,
+             LogLevel::Level level,
+             LogEvent::ptr event) override;
     // std::string toYamlString() override;
 
     // 重新打开日志文件
     bool reopen();
+
 private:
     // 文件路径
     std::string m_filename;
@@ -374,20 +485,24 @@ private:
 };
 
 // 日志管理器类
-class LoggerManager {
+class LoggerManager
+{
 public:
     typedef Spinlock MutexType;
 
     LoggerManager();
 
     // 获取日志器
-    Logger::ptr getLogger(const std::string& name);
+    Logger::ptr getLogger(const std::string &name);
 
     // 初始化
     void init();
 
     // 返回主日志器
-    Logger::ptr getRoot() const { return m_root;}
+    Logger::ptr getRoot() const
+    {
+        return m_root;
+    }
 
     // 将所有的日志器配置转成YAML String
     // std::string toYamlString();
@@ -403,6 +518,6 @@ private:
 // 日志管理器类单例模式
 typedef lunar::Singleton<LoggerManager> LoggerMgr;
 
-}
+} // namespace lunar
 
 #endif

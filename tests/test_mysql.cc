@@ -1,17 +1,20 @@
-#include <iostream>
 #include "../lunar/db/mysql.h"
 #include "../lunar/iomanager.h"
+#include <iostream>
 
-void run() {
-    do {
+void run()
+{
+    do
+    {
         std::map<std::string, std::string> params;
         params["host"] = "127.0.0.1";
         params["user"] = "root";
         params["passwd"] = "883721";
-        params["dbname"] = "alpha";
+        params["dbname"] = "lunar";
 
         lunar::MySQL::ptr mysql(new lunar::MySQL(params));
-        if(!mysql->connect()) {
+        if (!mysql->connect())
+        {
             std::cout << "connect fail" << std::endl;
             return;
         }
@@ -37,13 +40,15 @@ void run() {
         auto res = mysql->query("select * from tb_user");
         std::cout << res->getDataCount() << std::endl;
         std::cout << res->getColumnCount() << std::endl;
-        while(res->next()) {
+        while (res->next())
+        {
             int count = res->getColumnCount();
-            for(int i = 0; i < count; ++i) {
+            for (int i = 0; i < count; ++i)
+            {
                 std::cout << res->getString(i) << "---";
             }
             std::cout << std::endl;
-        } 
+        }
 
         // auto stmt = mysql->prepare("select * from tb_user");
         // stmt->bind(0, a);
@@ -74,11 +79,12 @@ void run() {
         //        << " - " << res->getInt64(1) << std::endl;
         //}
         //std::cout << "===" << i << std::endl;
-    } while(false);
+    } while (false);
     std::cout << "over" << std::endl;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     lunar::IOManager iom(1);
     iom.schedule(run);
     // iom.addTimer(1000, run, true);

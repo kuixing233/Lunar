@@ -5,25 +5,28 @@
 #define THREADED
 #endif
 
-#include <string>
 #include <memory>
+#include <string>
 #include <zookeeper/zookeeper.h>
 
-namespace lunar {
+namespace lunar
+{
 
-namespace rpc {
+namespace rpc
+{
 
 /**
  * @brief ZooKeeper客户端类
  * 
  */
-class ZkClientRPC {
+class ZkClientRPC
+{
 public:
     typedef std::shared_ptr<ZkClientRPC> ptr;
 
     ZkClientRPC();
-    ZkClientRPC(const ZkClientRPC&) = delete;
-    ZkClientRPC& operator=(const ZkClientRPC&) = delete;
+    ZkClientRPC(const ZkClientRPC &) = delete;
+    ZkClientRPC &operator=(const ZkClientRPC &) = delete;
     ~ZkClientRPC();
 
     /**
@@ -42,7 +45,9 @@ public:
      * ZOO_EPHEMERAL: 临时性节点
      * ZOO_SEQUENCE: 路径名后添加唯一的、单调递增的序号
      */
-    void create(const std::string& path, const std::string& data, int flags = 0);
+    void create(const std::string &path,
+                const std::string &data,
+                int flags = 0);
 
     /**
      * @brief 获取节点数据
@@ -50,16 +55,16 @@ public:
      * @param path 节点路径
      * @return std::string 
      */
-    std::string getData(const std::string& path);
+    std::string getData(const std::string &path);
 
     int32_t close();
 
 private:
-    zhandle_t* m_zkHandler; // zookeeper句柄
+    zhandle_t *m_zkHandler; // zookeeper句柄
 };
 
-}
+} // namespace rpc
 
-} 
+} // namespace lunar
 
-#endif 
+#endif

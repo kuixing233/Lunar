@@ -748,7 +748,7 @@ if(NOT MYSQL_VERSION)
   message(FATAL_ERROR "Could not determine the MySQL Server version")
 endif()
 
-# Clean up so only numeric, in case of "-alpha" or similar
+# Clean up so only numeric, in case of "-lunar" or similar
 string(REGEX MATCHALL "([0-9]+.[0-9]+.[0-9]+)" MYSQL_VERSION "${MYSQL_VERSION}")
 # To create a fully numeric version, first normalize so N.NN.NN
 string(REGEX REPLACE "[.]([0-9])[.]" ".0\\1." MYSQL_VERSION_ID "${MYSQL_VERSION}")
